@@ -51,9 +51,24 @@ const addBooksHandler = (request, h) => {
 }
 
 const getAllBooksHandler = (request, h) => {
+    const { name , reading , finished } = request.query;
+    let book = books;
+
+    if(name !== undefined){
+        book = books.filter((n) => n.name.toLowerCase().includes(name.toLowerCase()));
+    }
+    if(reading !== undefined){
+        book = books.filter((n) => n.reading ===(parseInt(reading) === 1));
+    }
+    if(finished !== undefined){
+        book = books.filter((n) => n.finished === (parseInt(finished) === 1));
+    }
+
     const response = h.response({
         status: 'success',
-        data: books
+        data: {
+            "books": book
+        }
     });
     response.code(200);
     return response;
@@ -61,26 +76,17 @@ const getAllBooksHandler = (request, h) => {
 
 const getBookByIdHandler = (request, h) => {
     const { bookId } = request.params;
-    const { query } = request.query;
 
     let book = books.filter((n) => n.id === bookId)[0];
 
-    if (query !== undefined) {
-        if(query === 'name'){
-            book = books.filter((n) => n.name.toLowerCase().includes(name.toLowerCase()));
-        }
-        if(query === 'reading'){
-            book = books.filter((n) => n.reading === (reading === 1));
-        }
-        if(query === 'finished'){
-            book = books.filter((n) => n.finished === (finished === 1));
-        }
-    }
 
     if (book !== undefined) {
         return {
+            query : "query",
             status: 'success',
-            data: book,
+            data: {
+                "books": book
+            }
         };
     }
     const response = h.response({
